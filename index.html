@@ -17,6 +17,10 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Ambient background glow spots -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
   <div class="app-container">
     
     <!-- Top Header -->
@@ -78,6 +82,20 @@
       
       <!-- Left Column: Add Transaction & Chart Visualization -->
       <div class="layout-column column-left">
+        
+        <!-- Wisdom Quote Card -->
+        <div class="glass-card quote-card">
+          <div class="quote-header">
+            <span class="quote-title-label"><i class="fa-solid fa-lightbulb"></i> FinWisdom</span>
+            <button id="btn-next-quote" class="btn-quote-refresh" title="Ganti Kutipan">
+              <i class="fa-solid fa-arrows-rotate"></i>
+            </button>
+          </div>
+          <div class="quote-body">
+            <p id="quote-text">"Jangan menabung apa yang tersisa setelah dibelanjakan, tapi belanjakan apa yang tersisa setelah ditabung."</p>
+            <span id="quote-author">— Warren Buffett</span>
+          </div>
+        </div>
         
         <!-- Chart Visualization Card -->
         <div class="glass-card chart-card">

@@ -502,7 +502,49 @@ function importData(fileEvent) {
   fileEvent.target.value = '';
 }
 
-// 4. Initialisation & DOM Event Bindings
+// 4. Wisdom Quote Generator System
+const SAVING_QUOTES = [
+  { text: "Jangan menabung apa yang tersisa setelah dibelanjakan, tapi belanjakan apa yang tersisa setelah ditabung.", author: "Warren Buffett" },
+  { text: "Jika kamu membeli hal-hal yang tidak kamu butuhkan, segera kamu harus menjual hal-hal yang kamu butuhkan.", author: "Warren Buffett" },
+  { text: "Uang adalah hamba yang baik, tapi tuan yang buruk.", author: "Francis Bacon" },
+  { text: "Bukan seberapa banyak uang yang kamu hasilkan, tapi seberapa banyak uang yang kamu simpan.", author: "Robert Kiyosaki" },
+  { text: "Hemat bukan berarti pelit, melainkan tahu bagaimana cara menghargai hasil kerja kerasmu.", author: "FinWisdom" },
+  { text: "Orang kaya tetap kaya dengan cara hidup seperti orang miskin. Orang miskin tetap miskin dengan cara hidup seperti orang kaya.", author: "Pepatah Finansial" },
+  { text: "Jangan biarkan gaya hidupmu balapan dengan pendapatanmu.", author: "FinWisdom" },
+  { text: "Uang yang disimpan hari ini adalah tiket kebebasan finansialmu di masa depan.", author: "FinWisdom" },
+  { text: "Atur uangmu, atau jika tidak, kemiskinanlah yang akan mengaturmu.", author: "Dave Ramsey" },
+  { text: "Lebih mudah menahan diri di awal daripada menyesal di akhir bulan.", author: "FinWisdom" }
+];
+
+function renderRandomQuote() {
+  const quoteTextEl = document.getElementById('quote-text');
+  const quoteAuthorEl = document.getElementById('quote-author');
+  
+  if (!quoteTextEl || !quoteAuthorEl) return;
+  
+  const currentText = quoteTextEl.textContent;
+  let randomQuote;
+  
+  do {
+    const randomIndex = Math.floor(Math.random() * SAVING_QUOTES.length);
+    randomQuote = SAVING_QUOTES[randomIndex];
+  } while (SAVING_QUOTES.length > 1 && `"${randomQuote.text}"` === currentText);
+  
+  quoteTextEl.style.opacity = 0;
+  quoteAuthorEl.style.opacity = 0;
+  
+  setTimeout(() => {
+    quoteTextEl.textContent = `"${randomQuote.text}"`;
+    quoteAuthorEl.textContent = `— ${randomQuote.author}`;
+    
+    quoteTextEl.style.transition = 'opacity 0.25s ease';
+    quoteAuthorEl.style.transition = 'opacity 0.25s ease';
+    quoteTextEl.style.opacity = 1;
+    quoteAuthorEl.style.opacity = 1;
+  }, 250);
+}
+
+// 5. Initialisation & DOM Event Bindings
 document.addEventListener('DOMContentLoaded', () => {
   // Load data
   loadState();
@@ -516,6 +558,10 @@ document.addEventListener('DOMContentLoaded', () => {
   updateDashboard();
   updateChart();
   renderTransactions();
+  
+  // Quotes Initialize & Listener
+  renderRandomQuote();
+  document.getElementById('btn-next-quote').addEventListener('click', renderRandomQuote);
   
   // Form Type Switcher tabs
   const typeTabs = document.querySelectorAll('.type-tab');

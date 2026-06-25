@@ -81,8 +81,9 @@ body {
 }
 
 .glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 15px 35px -8px rgba(0, 0, 0, 0.8), 0 0 25px rgba(99, 102, 241, 0.05);
+  border-color: rgba(99, 102, 241, 0.22);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.85), 0 0 25px rgba(99, 102, 241, 0.07);
+  transform: translateY(-4px);
 }
 
 /* ==========================================
@@ -932,4 +933,129 @@ select option {
   .header-actions span {
     display: none; /* Hide button text on mobile, icons only */
   }
+}
+
+/* ==========================================
+   Ambient Background Glow
+   ========================================== */
+.bg-glow {
+  position: fixed;
+  width: 45vw;
+  height: 45vw;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(140px);
+  opacity: 0.06;
+  transition: var(--transition-smooth);
+}
+
+.bg-glow-1 {
+  background: var(--accent-primary);
+  top: -15%;
+  left: -15%;
+  animation: floatGlow1 20s infinite alternate ease-in-out;
+}
+
+.bg-glow-2 {
+  background: var(--color-income);
+  bottom: -15%;
+  right: -15%;
+  animation: floatGlow2 20s infinite alternate ease-in-out;
+}
+
+@keyframes floatGlow1 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(50px, 30px) scale(1.1); }
+}
+
+@keyframes floatGlow2 {
+  0% { transform: translate(0, 0) scale(1.1); }
+  100% { transform: translate(-50px, -30px) scale(0.9); }
+}
+
+/* ==========================================
+   Wisdom Quote Card Styling
+   ========================================== */
+.quote-card {
+  border-left: 4px solid var(--accent-primary);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(17, 24, 39, 0.6) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.quote-card::before {
+  content: '"';
+  position: absolute;
+  bottom: -20px;
+  right: 15px;
+  font-size: 8rem;
+  font-family: serif;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.025);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.quote-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.quote-title-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+.btn-quote-refresh {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: var(--transition-smooth);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.btn-quote-refresh:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  transform: rotate(180deg);
+}
+
+.quote-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#quote-text {
+  font-size: 0.9375rem;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.6;
+  color: #f1f5f9;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+#quote-author {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--accent-primary);
+  align-self: flex-end;
+  letter-spacing: 0.5px;
 }
