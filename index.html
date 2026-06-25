@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinFlow - Personal Finance Tracker</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon"><i class="fa-solid fa-wallet"></i></div>
+        <h1>Fin<span>Flow</span></h1>
+      </div>
+      <div class="header-actions">
+        <button id="btn-export" class="btn btn-secondary" title="Ekspor Data ke JSON">
+          <i class="fa-solid fa-file-export"></i> <span>Ekspor</span>
+        </button>
+        <button id="btn-import" class="btn btn-secondary" title="Impor Data dari JSON">
+          <i class="fa-solid fa-file-import"></i> <span>Impor</span>
+          <input type="file" id="import-file" accept=".json" style="display: none;">
+        </button>
+        <button id="btn-reset" class="btn btn-danger-icon" title="Reset Semua Data">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Dashboard Section -->
+    <section class="dashboard-section">
+      <!-- Balance Card (Large) -->
+      <div class="balance-card glass-card">
+        <div class="card-label">Sisa Saldo Anda</div>
+        <div id="total-balance" class="balance-val">Rp 0</div>
+        <div class="balance-indicator-bar">
+          <span class="indicator-dot green"></span>
+          <span id="balance-status-text">Status Keuangan: Stabil</span>
+        </div>
+      </div>
+      
+      <!-- Summaries (Income / Expense) -->
+      <div class="summary-cards-grid">
+        <!-- Income summary -->
+        <div class="summary-card income glass-card">
+          <div class="card-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+          <div class="card-details">
+            <span class="summary-label">Total Pemasukan</span>
+            <span id="total-income" class="summary-val text-green">Rp 0</span>
+          </div>
+        </div>
+        
+        <!-- Expense summary -->
+        <div class="summary-card expense glass-card">
+          <div class="card-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+          <div class="card-details">
+            <span class="summary-label">Total Pengeluaran</span>
+            <span id="total-expense" class="summary-val text-rose">Rp 0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Workspace Layout -->
+    <main class="main-layout">
+      
+      <!-- Left Column: Add Transaction & Chart Visualization -->
+      <div class="layout-column column-left">
+        
+        <!-- Chart Visualization Card -->
+        <div class="glass-card chart-card">
+          <h2 class="card-title">Alokasi Pengeluaran</h2>
+          <div class="chart-wrapper">
+            <canvas id="expense-chart"></canvas>
+            <div id="chart-placeholder" class="chart-placeholder">
+              <i class="fa-solid fa-chart-pie"></i>
+              <p>Belum ada data pengeluaran untuk ditampilkan.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Transaction Card -->
+        <div class="glass-card form-card">
+          <h2 class="card-title">Tambah Transaksi</h2>
+          
+          <form id="transaction-form" autocomplete="off">
+            <!-- Type Selector Tab-like -->
+            <div class="type-selector">
+              <label class="type-tab active" data-type="expense">
+                <input type="radio" name="tx-type" value="expense" checked style="display:none;">
+                <i class="fa-solid fa-minus-circle"></i> Pengeluaran
+              </label>
+              <label class="type-tab" data-type="income">
+                <input type="radio" name="tx-type" value="income" style="display:none;">
+                <i class="fa-solid fa-plus-circle"></i> Pemasukan
+              </label>
+            </div>
+
+            <!-- Amount Input -->
+            <div class="form-group">
+              <label for="amount">Nominal (Rp)</label>
+              <div class="input-wrapper amount-wrapper">
+                <span class="currency-prefix">Rp</span>
+                <input type="text" id="amount" placeholder="0" required>
+              </div>
+            </div>
+
+            <!-- Category Selector -->
+            <div class="form-group">
+              <label for="category">Kategori</label>
+              <select id="category" required>
+                <!-- Filled dynamically by JavaScript based on transaction type -->
+              </select>
+            </div>
+
+            <!-- Date Selector -->
+            <div class="form-group">
+              <label for="date">Tanggal</label>
+              <div class="input-wrapper">
+                <input type="date" id="date" required>
+              </div>
+            </div>
+
+            <!-- Note Input -->
+            <div class="form-group">
+              <label for="note">Catatan / Deskripsi</label>
+              <div class="input-wrapper">
+                <input type="text" id="note" placeholder="Contoh: Beli makan siang, Gaji bulanan">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fa-solid fa-check"></i> Simpan Transaksi
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Filter & Transaction History -->
+      <div class="layout-column column-right">
+        
+        <!-- Transaction History Card -->
+        <div class="glass-card history-card">
+          <div class="history-header">
+            <h2 class="card-title">Riwayat Transaksi</h2>
+            <span id="transaction-count" class="count-badge">0 item</span>
+          </div>
+
+          <!-- Filters Row -->
+          <div class="filters-container">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="search" placeholder="Cari catatan...">
+            </div>
+            
+            <div class="filter-controls">
+              <!-- Type Filter -->
+              <select id="filter-type">
+                <option value="all">Semua Tipe</option>
+                <option value="expense">Pengeluaran</option>
+                <option value="income">Pemasukan</option>
+              </select>
+
+              <!-- Category Filter -->
+              <select id="filter-category">
+                <option value="all">Semua Kategori</option>
+                <!-- Filled dynamically by JS -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Transaction List -->
+          <div class="list-wrapper">
+            <ul id="transaction-list" class="transaction-list">
+              <!-- Filled dynamically by JS -->
+            </ul>
+            <div id="list-empty" class="list-empty">
+              <i class="fa-solid fa-receipt"></i>
+              <p>Tidak ada transaksi yang cocok.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      
+    </main>
+
+  </div>
+
+  <!-- Custom Alert Toast Component -->
+  <div id="toast" class="toast hidden">
+    <span id="toast-message">Notifikasi</span>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirm-modal" class="modal-overlay hidden">
+    <div class="modal-content glass-card">
+      <h3>Konfirmasi Hapus</h3>
+      <p id="confirm-message">Apakah Anda yakin ingin menghapus semua data? Tindakan ini tidak bisa dibatalkan.</p>
+      <div class="modal-actions">
+        <button id="btn-confirm-cancel" class="btn btn-secondary">Batal</button>
+        <button id="btn-confirm-ok" class="btn btn-danger">Hapus Semua</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ChartJS script -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Application logic -->
+  <script src="app.js"></script>
+</body>
+</html>
