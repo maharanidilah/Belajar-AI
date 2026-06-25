@@ -423,24 +423,53 @@ function hideConfirmModal() {
   onConfirmAction = null;
 }
 
-// Export/Import JSON helpers
+// Export to Excel using SheetJS (XLSX)
 function exportData() {
   if (state.transactions.length === 0) {
     showToast('Tidak ada transaksi untuk diekspor.', 'error');
     return;
   }
-  
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
-  const downloadAnchor = document.createElement('a');
-  
-  const dateStamp = new Date().toISOString().slice(0,10);
-  downloadAnchor.setAttribute("href", dataStr);
-  downloadAnchor.setAttribute("download", `FinFlow_Data_${dateStamp}.json`);
-  document.body.appendChild(downloadAnchor);
-  downloadAnchor.click();
-  downloadAnchor.remove();
-  
-  showToast('Data berhasil diekspor ke JSON!', 'success');
+
+  if (typeof XLSX === 'undefined') {
+    showToast('Gagal: Library XLSX belum dimuat.', 'error');
+    return;
+  }
+
+  try {
+    // Format data transaksi agar rapi di tabel Excel
+    const excelData = state.transactions.map((t, idx) => ({
+      'No': idx + 1,
+      'Tanggal': t.date,
+      'Tipe': t.type === 'income' ? 'Pemasukan' : 'Pengeluaran',
+      'Nominal (Rp)': t.amount,
+      'Kategori': t.category,
+      'Catatan': t.note || '-'
+    }));
+
+    // Buat worksheet dan workbook baru
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Transaksi FinFlow");
+
+    // Atur lebar kolom agar tidak terpotong di Excel
+    worksheet['!cols'] = [
+      { wch: 6 },  // No
+      { wch: 15 }, // Tanggal
+      { wch: 15 }, // Tipe
+      { wch: 18 }, // Nominal (Rp)
+      { wch: 22 }, // Kategori
+      { wch: 35 }  // Catatan
+    ];
+
+    // Trigger unduhan file Excel (.xlsx)
+    const dateStamp = new Date().toISOString().slice(0, 10);
+    XLSX.writeFile(workbook, `FinFlow_Ekspor_${dateStamp}.xlsx`);
+
+    showToast('Data berhasil diekspor ke Excel!', 'success');
+  } catch (err) {
+    console.error('Error saat ekspor Excel:', err);
+    showToast('Terjadi kesalahan saat mengekspor ke Excel.', 'error');
+  }
 }
 
 function importData(fileEvent) {
