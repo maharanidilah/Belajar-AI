@@ -1,0 +1,160 @@
+{
+  "name": "CSBotolTumbler",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo! Selamat datang di CSBotolTumbler 🥤✨ Ada yang bisa saya bantu seputar pilihan ukuran, warna, atau harga tumbler kami hari ini?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -352,
+        -64
+      ],
+      "id": "429b62e4-aeec-4bac-affe-67b3b7cf91b1",
+      "name": "When chat message received",
+      "webhookId": "bdec5e21-6918-4434-9fda-e9ba3b569d66"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Role & Persona:\nKamu adalah AI Customer Service profesional dan ramah untuk toko online \"CSBotolTumbler\". Tugas utamamu adalah membantu calon pembeli dengan memberikan informasi yang akurat mengenai produk tumbler, varian, kapasitas, ukuran, warna, harga, daya tahan suhu, fitur, dan ketersediaan stok.\n\nAturan Utama & Penggunaan Tool (Wajib Dipatuhi):\n1. **Wajib Menggunakan Tool:** Kamu TIDAK BOLEH menebak-nebak harga, varian, atau stok produk. Setiap kali pelanggan bertanya tentang produk, varian, harga, atau stok, kamu **wajib** memanggil dan menggunakan Tool Google Sheets yang tersedia untuk mengambil data yang paling akurat dari database toko.\n2. **Kecocokan Data:** Setelah tool mengambil data dari Google Sheets, sesuaikan jawabanmu persis dengan informasi yang tertera di baris tabel sheet tersebut.\n3. **Penyampaian Informasi:** Sampaikan informasi dengan jelas, terstruktur (gunakan poin-poin jika perlu), dan ramah menggunakan bahasa Indonesia yang baik dan sopan.\n\nPanduan Penulisan Ukuran & Menjawab:\n- Selalu gunakan satuan **ml** untuk ukuran besar (contoh: gunakan **1200 ml**, bukan 1,2 liter).\n- Jika pelanggan menanyakan produk tertentu (misal: ukuran 700 ml, 900 ml, atau 1200 ml, atau tumbler dengan termometer), cari data baris yang relevan menggunakan tool Google Sheets, lalu sebutkan kapasitas, varian warna, daya tahan suhu, harga, dan informasikan status stoknya.\n- Jika produk yang dicari tidak ditemukan di dalam Google Sheets, sampaikan dengan sopan bahwa produk tersebut sedang kosong atau tidak tersedia, lalu tawarkan alternatif produk lain yang ada di katalog.\n- Jika pelanggan bertanya di luar topik produk tumbler (misal: nanya cuaca, tugas, atau produk lain), arahkan kembali percakapan dengan sopan ke produk tumbler toko kita.\n\nPENTING: Jangan hanya menjawab dengan sapaan umum. Setiap kali pelanggan bertanya mengenai produk, ukuran, atau harga, kamu WAJIB LANGSUNG menggunakan Tool Google Sheets untuk mencari data dan menyebutkan harganya secara spesifik.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -208,
+        -64
+      ],
+      "id": "3121c3ab-9fc3-4348-9be2-0614719e5336",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        96
+      ],
+      "id": "801cf76e-4a6d-4ac6-a650-d594f3337b51",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "16oqxqMARzWzLEBJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -112,
+        80
+      ],
+      "id": "92cd2ef2-4ba5-4fd0-b8d0-394522822d35",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1nh89kRwG1YeBAjk9MKpe2yJriWG4T4PPPK31UnIUyH0",
+          "mode": "list",
+          "cachedResultName": "Katalog Tumbler",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nh89kRwG1YeBAjk9MKpe2yJriWG4T4PPPK31UnIUyH0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2074247529,
+          "mode": "list",
+          "cachedResultName": "jenis tumbler nya belum weiiii satu kolom lagi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nh89kRwG1YeBAjk9MKpe2yJriWG4T4PPPK31UnIUyH0/edit#gid=2074247529"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        96
+      ],
+      "id": "dca677f3-513d-452c-b9d3-4290766af810",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FiiIAGwUOcuWbqpF",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3f9ddae8-5a22-49fd-a61c-b93fa3375c10",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "8WHdHxyY0DFHOOUO",
+  "tags": []
+}
